@@ -1,10 +1,9 @@
-import { CreateOrUpdateProductCommand } from '../CreateOrUpdateProductCommand';
-import { IProductRepository } from '../../../domain/repositories/IProductRepository';
 import { Product } from '../../../domain/entities/Product';
+import { IProductRepository } from '../../../domain/repositories/IProductRepository';
 import { Price } from '../../../domain/valueObjects/Price';
-import { v4 as uuidv4 } from 'uuid';
+import { CreateOrUpdateProductCommand } from '../CreateOrUpdateProductCommand';
 
-export class UpdateProductHandler {
+export class UpdateProductUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
 
   async execute(id: string, command: CreateOrUpdateProductCommand): Promise<Product> {

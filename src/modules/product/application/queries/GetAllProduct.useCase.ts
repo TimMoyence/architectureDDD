@@ -1,11 +1,10 @@
 import { Product } from '../../domain/entities/Product';
 import { IProductRepository } from '../../domain/repositories/IProductRepository';
 
-export class GetOneProductHandler {
+export class GetAllProductUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
 
-  async execute(id: string): Promise<Product | null> {
-    return this.productRepository.findById(id);
+  async execute(): Promise<Product[]> {
+    return this.productRepository.findAll();
   }
-
 }

@@ -1,34 +1,34 @@
 import { Request, Response } from 'express';
 import { CreateOrUpdateProductCommand } from '../../application/commands/CreateOrUpdateProductCommand';
-import { CreateProductHandler } from '../../application/commands/handlers/CreateProductHandler';
+import { CreateProductUseCase } from '../../application/commands/handlers/CreateProduct.useCase';
+import { DeleteProductUseCase } from '../../application/commands/handlers/DeleteProduct.useCase';
+import { UpdateProductUseCase } from '../../application/commands/handlers/UpdateProduct.useCase';
+import { GetAllProductUseCase } from '../../application/queries/GetAllProduct.useCase';
+import { GetOneProductUseCase } from '../../application/queries/GetOneProduct.useCase';
 import { IProductRepository } from '../../domain/repositories/IProductRepository';
 import { ProductRepository } from '../../infrastructure/repositories/ProductRepository';
-import { UpdateProductHandler } from '../../application/commands/handlers/UpdateProductHandler';
-import { DeleteProductHandler } from '../../application/commands/handlers/DeleteProductHandler';
-import { GetAllProductHandler } from '../../application/queries/GetAllProductHandler';
-import { GetOneProductHandler } from '../../application/queries/GetOneProductHandler';
 
 export class ProductController {
-  private readonly createProductHandler: CreateProductHandler;
-  private readonly updateProductHandler: UpdateProductHandler;
-  private readonly deleteProductHandler: DeleteProductHandler;
-  private readonly getAllProductHandler: GetAllProductHandler;
-  private readonly getProductByIdHandler: GetOneProductHandler;
+  private readonly CreateProductUseCase: CreateProductUseCase;
+  private readonly UpdateProductUseCase: UpdateProductUseCase;
+  private readonly DeleteProductUseCase: DeleteProductUseCase;
+  private readonly GetAllProductUseCase: GetAllProductUseCase;
+  private readonly getProductByIdUseCase: GetOneProductUseCase;
 
   constructor() {
     const productRepository: IProductRepository = new ProductRepository();
-    this.createProductHandler = new CreateProductHandler(productRepository);
-    this.updateProductHandler = new UpdateProductHandler(productRepository);
-    this.deleteProductHandler = new DeleteProductHandler(productRepository);
-    this.getAllProductHandler = new GetAllProductHandler(productRepository);
-    this.getProductByIdHandler = new GetOneProductHandler(productRepository);
+    this.CreateProductUseCase = new CreateProductUseCase(productRepository);
+    this.UpdateProductUseCase = new UpdateProductUseCase(productRepository);
+    this.DeleteProductUseCase = new DeleteProductUseCase(productRepository);
+    this.GetAllProductUseCase = new GetAllProductUseCase(productRepository);
+    this.getProductByIdUseCase = new GetOneProductUseCase(productRepository);
   }
 
   async createProduct(req: Request, res: Response): Promise<void> {
     try {
       const { name, description, price, currency, stock } = req.body;
       const command = new CreateOrUpdateProductCommand(name, description, price, currency, stock);
-      const product = await this.createProductHandler.execute(command);
+      const product = await this.CreateProductUseCase.execute(command);
       res.status(201).json(product);
     } catch (error: unknown) {
       res.status(400).json({ error: error.toString() });
@@ -37,7 +37,7 @@ export class ProductController {
 
   async getAllProduct(req: Request, res: Response): Promise<void> {
     try {
-      const products = await this.getAllProductHandler.execute();
+      const products = await this.GetAllProductUseCase.execute();
       res.status(200).json(products)
     } catch (error: unknown) {
       res.status(400).json({ error: error.toString() });
@@ -47,7 +47,7 @@ export class ProductController {
   async getProductById(req: Request, res: Response): Promise<void> {
     try {
       const id = req.params.id;
-      const product = await this.getProductByIdHandler.execute(id);
+      const product = await this.getProductByIdUseCase.execute(id);
       if (!product) {
         res.status(404).send();
         return;
@@ -63,7 +63,7 @@ export class ProductController {
       const id = req.params.id;
       const { name, description, price, currency, stock } = req.body;
       const command = new CreateOrUpdateProductCommand(name, description, price, currency, stock);
-      const product = await this.updateProductHandler.execute(id, command);
+      const product = await this.UpdateProductUseCase.execute(id, command);
       res.status(200).json(product);
     } catch (error: unknown) {
       res.status(400).json({ error: error.toString() });
@@ -73,7 +73,7 @@ export class ProductController {
   async deleteProduct(req: Request, res: Response): Promise<void> {
     try {
       const id = req.params.id;
-      await this.deleteProductHandler.execute(id);
+      await this.DeleteProductUseCase.execute(id);
       res.status(204).send();
     } catch (error: unknown) {
       res.status(400).json({ error: error.toString() });

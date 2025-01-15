@@ -4,7 +4,7 @@ import { IProductRepository } from '../../../domain/repositories/IProductReposit
 import { Price } from '../../../domain/valueObjects/Price';
 import { CreateOrUpdateProductCommand } from '../CreateOrUpdateProductCommand';
 
-export class CreateProductHandler {
+export class CreateProductUseCase {
   constructor(private readonly productRepository: IProductRepository) {}
 
   async execute(command: CreateOrUpdateProductCommand): Promise<Product> {
